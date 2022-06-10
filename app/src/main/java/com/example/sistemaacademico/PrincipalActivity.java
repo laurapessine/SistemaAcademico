@@ -1,11 +1,12 @@
 package com.example.sistemaacademico;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,7 +15,6 @@ public class PrincipalActivity extends AppCompatActivity {
     private TextView lblEscola, lblProf, lblTitulo, lblDisc1, lblDisc2, lblDisc3;
     private Button btnProfessor, btnDisciplina;
     private RadioGroup radioGroup;
-    private RadioButton radDisc1, radDisc2, radDisc3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,44 +30,62 @@ public class PrincipalActivity extends AppCompatActivity {
         btnProfessor = findViewById(R.id.btnProfessor);
         btnDisciplina = findViewById(R.id.btnDisciplina);
         radioGroup = findViewById(R.id.radioGroup);
-        radDisc1 = findViewById(R.id.radDisc1);
-        radDisc2 = findViewById(R.id.radDisc2);
-        radDisc3 = findViewById(R.id.radDisc3);
 
         Intent intentMain = getIntent();
         String escola = intentMain.getStringExtra("escola");
         lblEscola.setText(escola);
 
         btnProfessor.setOnClickListener(view -> {
-            Intent intentVaiProf = new Intent(getApplicationContext(), ProfessorActivity.class);
-            startActivity(intentVaiProf);
+            Intent intentProf = new Intent(getApplicationContext(), ProfessorActivity.class);
+            startActivityForResult(intentProf, 1);
         });
 
         btnDisciplina.setOnClickListener(view -> {
-            Intent intentVaiDisc = new Intent(getApplicationContext(), DisciplinaActivity.class);
-            startActivity(intentVaiDisc);
+            int radio = radioGroup.getCheckedRadioButtonId();
+            if (radio == -1) {
+                Toast.makeText(getApplicationContext(), "Por favor, selecione uma disciplina",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Intent intentDisc = new Intent(getApplicationContext(), DisciplinaActivity.class);
+                startActivityForResult(intentDisc, 2);
+            }
         });
-
-        Intent intentVoltaProf = getIntent();
-        String professor = intentVoltaProf.getStringExtra("professor");
-        String titulacao = intentVoltaProf.getStringExtra("titulacao");
-        lblProf.setText(professor);
-        lblTitulo.setText(titulacao);
     }
 
-    private class EscutadorRadioGroup implements RadioGroup.OnCheckedChangeListener {
-        @Override
-        public void onCheckedChanged(RadioGroup radioGroup, int id) {
-            switch (id) {
-                case R.id.radDisc1:
-                    // código aqui
-                    break;
-                case R.id.radDisc2:
-                    // código aqui
-                    break;
-                case R.id.radDisc3:
-                    // código aqui
-                    break;
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                String professor = intent.getStringExtra("professor");
+                String titulacao = intent.getStringExtra("titulacao");
+                lblProf.setText(professor);
+                lblTitulo.setText(titulacao);
+            } else {
+                lblProf.setText("não informado");
+                lblTitulo.setText("não informado");
+            }
+        } else if (requestCode == 2) {
+            int radio = radioGroup.getCheckedRadioButtonId();
+            if (resultCode == RESULT_OK) {
+                String disciplina = intent.getStringExtra("disciplina");
+                if (radio == R.id.radDisc1) {
+                    lblDisc1.setText(disciplina);
+                } else if (radio == R.id.radDisc2) {
+                    lblDisc2.setText(disciplina);
+                } else if (radio == R.id.radDisc3) {
+                    lblDisc3.setText(disciplina);
+                }
+            } else {
+                if (radio == R.id.radDisc1) {
+                    lblDisc1.setText("não informado");
+                } else if (radio == R.id.radDisc2) {
+                    lblDisc2.setText("não informado");
+                } else if (radio == R.id.radDisc3) {
+                    lblDisc3.setText("não informado");
+                }
             }
         }
     }

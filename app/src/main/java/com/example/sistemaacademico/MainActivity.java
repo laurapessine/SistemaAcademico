@@ -1,3 +1,4 @@
+// LAURA E EVANDRO
 package com.example.sistemaacademico;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,14 +24,18 @@ public class MainActivity extends AppCompatActivity {
         btnCancelar = findViewById(R.id.btnCancelar);
 
         btnOK.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), PrincipalActivity.class);
-            String escola = txtEscola.getText().toString();
-            intent.putExtra("escola", escola);
-            startActivity(intent);
+            String escola = txtEscola.getText().toString().trim();
+            if (escola.isEmpty() || !escola.matches(".*\\w.*")) {
+                Toast.makeText(getApplicationContext(), "Por favor, informe o nome da escola",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Intent intent = new Intent(getApplicationContext(), PrincipalActivity.class);
+                intent.putExtra("escola", escola);
+                finish();
+                startActivity(intent);
+            }
         });
 
-        btnCancelar.setOnClickListener(view -> {
-            System.exit(0);
-        });
+        btnCancelar.setOnClickListener(view -> System.exit(0));
     }
 }

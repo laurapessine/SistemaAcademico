@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,14 +24,27 @@ public class ProfessorActivity extends AppCompatActivity {
         btnCancelar = findViewById(R.id.btnCancelar2);
 
         btnOK.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), PrincipalActivity.class);
-            String professor = txtNome.getText().toString();
-            String titulacao = txtTitulacao.getText().toString();
-            intent.putExtra("professor", professor);
-            intent.putExtra("titulacao", titulacao);
-            startActivity(intent);
+            Intent intent = new Intent();
+            String professor = txtNome.getText().toString().trim();
+            String titulacao = txtTitulacao.getText().toString().trim();
+            if (professor.isEmpty() || !professor.matches(".*\\w.*") ||
+                    titulacao.isEmpty() || !titulacao.matches(".*\\w.*")) {
+                Toast.makeText(getApplicationContext(), "Nome e/ou titulação não informado(s)",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                intent.putExtra("professor", professor);
+                intent.putExtra("titulacao", titulacao);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
         });
 
-        btnCancelar.setOnClickListener(view -> finish());
+        btnCancelar.setOnClickListener(view -> {
+            Intent intent = new Intent();
+            intent.putExtra("professor", "não informado");
+            intent.putExtra("titulacao", "não informado");
+            setResult(RESULT_CANCELED, intent);
+            finish();
+        });
     }
 }
